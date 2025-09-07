@@ -41,12 +41,10 @@ local function hideBlocked(obj)
     end
 end
 
--- hide existing
 for _, gui in pairs(PlayerGui:GetDescendants()) do
     hideBlocked(gui)
 end
 
--- hide new
 PlayerGui.DescendantAdded:Connect(function(obj)
     hideBlocked(obj)
 end)
@@ -59,7 +57,7 @@ local function hideNameplate(character)
     if head then
         for _, gui in ipairs(head:GetChildren()) do
             if gui:IsA("BillboardGui") then
-                gui.Enabled = false -- hides it without deleting
+                gui.Enabled = false
             end
         end
     end
@@ -72,12 +70,10 @@ local function onPlayerAdded(player)
     player.CharacterAdded:Connect(hideNameplate)
 end
 
--- existing players
 for _, plr in ipairs(Players:GetPlayers()) do
     onPlayerAdded(plr)
 end
 
--- new players
 Players.PlayerAdded:Connect(onPlayerAdded)
 
 ------------------------------------------------
@@ -109,7 +105,7 @@ local petTable = {
     ["Gourmet Egg"] = { "Bagel Bunny", "Pancake Mole", "Sushi Bear", "Spaghetti Sloth", "French Fry Ferret" }
 }
 
--- ESP Apply
+-- ESP Apply (egg name white + pet name green)
 local function applyESP(eggModel, petName)
     if eggModel:FindFirstChild("PetBillboard", true) then eggModel:FindFirstChild("PetBillboard", true):Destroy() end
     if eggModel:FindFirstChild("ESPHighlight") then eggModel.ESPHighlight:Destroy() end
@@ -120,19 +116,33 @@ local function applyESP(eggModel, petName)
 
     local billboard = Instance.new("BillboardGui", base)
     billboard.Name = "PetBillboard"
-    billboard.Size = UDim2.new(0, 250, 0, 40)
+    billboard.Size = UDim2.new(0, 150, 0, 40)
     billboard.AlwaysOnTop = true
-    billboard.StudsOffset = Vector3.new(0, 4.5, 0)
+    billboard.StudsOffset = Vector3.new(0, 2, 0) -- adjusted closer to egg
 
-    local label = Instance.new("TextLabel", billboard)
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = eggModel.Name .. " | " .. petName
-    label.TextScaled = true
-    label.TextColor3 = Color3.new(1, 1, 1)
-    label.Font = Enum.Font.FredokaOne
-    label.TextStrokeTransparency = 0.3
+    -- Egg Name (white)
+    local eggLabel = Instance.new("TextLabel", billboard)
+    eggLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    eggLabel.Position = UDim2.new(0, 0, 0, 0)
+    eggLabel.BackgroundTransparency = 1
+    eggLabel.Text = eggModel.Name
+    eggLabel.TextScaled = true
+    eggLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    eggLabel.Font = Enum.Font.FredokaOne
+    eggLabel.TextStrokeTransparency = 0.3
 
+    -- Pet Name (green)
+    local petLabel = Instance.new("TextLabel", billboard)
+    petLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    petLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    petLabel.BackgroundTransparency = 1
+    petLabel.Text = petName
+    petLabel.TextScaled = true
+    petLabel.TextColor3 = Color3.fromRGB(0, 255, 0) -- green
+    petLabel.Font = Enum.Font.FredokaOne
+    petLabel.TextStrokeTransparency = 0.3
+
+    -- Highlight
     local highlight = Instance.new("Highlight", eggModel)
     highlight.Name = "ESPHighlight"
     highlight.FillColor = Color3.fromRGB(255, 200, 0)
@@ -176,7 +186,7 @@ local function randomizeEggs()
     end
 end
 
--- Instant Randomize (no countdown, no wait)
+-- Instant Randomize
 local function doCountdown(btn, isAuto)
     if busy then return end
     busy = true
